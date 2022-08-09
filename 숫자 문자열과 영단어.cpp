@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -42,12 +43,14 @@ int solution(string s) {
                     }
                     if (isAllEqual) {
                         result += to_string(number.number);
-                        first += i - 1;
+                        first += i;
                         isEnd = true;
                         break;
                     }
                 }
                 if (isEnd) {
+                    --first;
+                    isEnd = false;
                     break;
                 }
             }
@@ -57,4 +60,14 @@ int solution(string s) {
     answer = stoi(result);
 
     return answer;
+}
+
+int main() {
+    // string s = "one4seveneight";
+    // string s = "23four5six7";
+    string s = "123";
+    // string s = "2three45sixseven";
+    int answer = solution(s);
+    cout << "answer: " << answer << '\n';
+    return 0;
 }
