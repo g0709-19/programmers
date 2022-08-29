@@ -31,7 +31,10 @@ vector<int> solution(int N, vector<int> stages) {
   }
   vector<pair<int, double>> failities;
   for (int stage=1; stage<=N; ++stage) {
-    double faility = fail[stage] / (double)tried[stage];
+    double faility = 0.0;
+    if (fail[stage] > 0) {
+      faility = fail[stage] / (double)tried[stage];
+    }
     failities.push_back({stage, faility});
   }
   sort(failities.begin(), failities.end(), compare);
