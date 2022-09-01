@@ -7,8 +7,10 @@ using namespace std;
 vector<int> apeachInfo;
 pair<int, vector<int>> higherCase = {0, vector<int>(1, -1)};
 
-void find(int n, vector<int> lionInfo) {
-  if (n == 0) {
+void find(int scoreIndex, int arrow, vector<int> lionInfo) {
+  if (scoreIndex == 11) {
+    lionInfo[scoreIndex-1] += arrow;
+
     int apeachScore = 0;
     int lionScore = 0;
     for (int score=10; score>=0; --score) {
@@ -37,20 +39,23 @@ void find(int n, vector<int> lionInfo) {
         }
       }
     }
+
+    lionInfo[scoreIndex-1] -= arrow;
   } else {
-    for (int score=10; score>=0; --score) {
-      int scoreIndex = 10 - score;
-      ++lionInfo[scoreIndex];
-      find(n-1, lionInfo);
-      --lionInfo[scoreIndex];
+    if (arrow > apeachInfo[scoreIndex]) {
+      int usedArrow = apeachInfo[scoreIndex] + 1;
+      lionInfo[scoreIndex] += usedArrow;
+      find(scoreIndex+1, arrow-usedArrow, lionInfo);
+      lionInfo[scoreIndex] -= usedArrow;
     }
+    find(scoreIndex+1, arrow, lionInfo);
   }
 }
 
 vector<int> solution(int n, vector<int> info) {
   vector<int> answer;
   apeachInfo = info;
-  find(n, vector<int>(11, 0));
+  find(0, n, vector<int>(11, 0));
   answer = higherCase.second;
   return answer;
 }
@@ -62,6 +67,6 @@ int main() {
   for (int lionScore : lionInfo) {
     cout << lionScore << ' ';
   }
-  cout << '\n';
+  cout << '\n' << countRecr << '\n';
   return 0;
 }
