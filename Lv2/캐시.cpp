@@ -20,8 +20,8 @@ int solution(int cacheSize, vector<string> cities) {
   for (string city : cities) {
     auto begin = cache.begin();
     auto iter = cache.end();
-    if (cache.size() > 3) {
-      begin = cache.end() - 3;
+    if (cache.size() > cacheSize) {
+      begin = cache.end() - cacheSize;
     }
     city = getLowerCase(city);
     if ((iter = find(begin, cache.end(), city)) != cache.end()) {
