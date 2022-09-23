@@ -90,4 +90,4 @@ int main() {
   cout << first << " " << 60420 << " " << (first == 60420 ? "O" : "X") << '\n';
   cout << second << " " << 300 << " " << (second == 300 ? "O" : "X") << '\n';
   return 0;
-}
+} 
