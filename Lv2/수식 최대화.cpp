@@ -6,57 +6,58 @@
 
 using namespace std;
 
-string getPostfixNotation(string infix, unordered_map<char, int> priority) {
-  string postfix = "";
+vector<string> getPostfixNotation(string infix, unordered_map<char, int> priority) {
+  vector<string> postfix;
   string number = "";
   stack<char> op;
   for (char c : infix) {
     if (c >= '0' && c <= '9') {
       number += c;
     } else {
-      postfix += number + ";";
+      postfix.push_back(number);
       number = "";
-      if (!op.empty() && priority[op.top()] < priority[c]) {
+      if (op.empty()) {
         op.push(c);
-      } else if (!op.empty() && priority[op.top()] >= priority[c]) {
-        while (!op.empty()) {
-          postfix += op.top();
+      } else {
+        while (!op.empty() && priority[op.top()] >= priority[c]) {
+          postfix.push_back(string("")+op.top());
           op.pop();
         }
-        op.push(c);
-      } else if (op.empty()) {
         op.push(c);
       }
     }
   }
-  postfix += number + ";";
+  postfix.push_back(number);
   while (!op.empty()) {
-    postfix += op.top();
+    postfix.push_back(string("")+op.top());
     op.pop();
   }
   return postfix;
 }
 
-long long getResultFromPostfix(string postfix) {
-  string number = "";
+bool isNumber(string s) {
+  for (char c : s) {
+    if (c < '0' || c > '9') {
+      return false;
+    }
+  }
+  return true;
+}
+
+long long getResultFromPostfix(vector<string> postfix) {
   stack<long long> result;
-  for (char c : postfix) {
-    if (c >= '0' && c <= '9') {
-      number += c;
-    } else if (c == ';') {
-      result.push(stoi(number));
-      number = "";
+  for (string c : postfix) {
+    if (isNumber(c)) {
+      result.push(stoi(c));
     } else {
       long long second = result.top();
       result.pop();
       long long first = result.top();
       result.pop();
       long long temp = 0;
-      switch (c) {
-        case '+': temp = first + second; break;
-        case '-': temp = first - second; break;
-        case '*': temp = first * second; break;
-      }
+      if (c == "+") temp = first + second;
+      if (c == "-") temp = first - second;
+      if (c == "*") temp = first * second;
       result.push(temp);
     }
   }
@@ -73,7 +74,7 @@ long long solution(string expression) {
         priority['+'] = i;
         priority['-'] = j;
         priority['*'] = k;
-        string postfix = getPostfixNotation(expression, priority);
+        vector<string> postfix = getPostfixNotation(expression, priority);
         int result = getResultFromPostfix(postfix);
         result = (result < 0 ? result * -1 : result);
         answer = (answer < result ? result : answer);
