@@ -29,11 +29,12 @@ int getSubbedMinute(string outTime, string inTime) {
     int sub = 0;
     if (out[1] < in[1]) {
         --out[0];
-        sub += 60 - out[1] - in[1];
+        sub += 60 - (in[1] - out[1]);
     } else {
         sub += out[1] - in[1];
     }
     sub += 60 * (out[0] - in[0]);
+    cout << outTime << " - " << inTime << " = " << sub << '\n';
     return sub;
 }
 
@@ -49,6 +50,7 @@ vector<int> solution(vector<int> fees, vector<string> records) {
     vector<int> answer;
     unordered_map<int, int> parkingTime;
     vector<pair<int, string>> parkingLot;
+    // 주차 시간 누적
     for (string record : records) {
         istringstream is(record);
         string time, type;
@@ -68,6 +70,7 @@ vector<int> solution(vector<int> fees, vector<string> records) {
             }
         }
     }
+    // 남은 차량 처리
     if (!parkingLot.empty()) {
         for (auto it=parkingLot.begin(); it!=parkingLot.end(); ++it) {
             string inTime = it->second;
@@ -75,6 +78,7 @@ vector<int> solution(vector<int> fees, vector<string> records) {
             parkingTime[it->first] += minute;
         }
     }
+    // 주차 요금 계산
     vector<pair<int, int>> pv(parkingTime.begin(), parkingTime. end());
     sort(pv.begin(), pv.end(), compare);
     for (auto p : pv) {
