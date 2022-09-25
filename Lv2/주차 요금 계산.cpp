@@ -9,93 +9,92 @@
 using namespace std;
 
 vector<int> getToken(string s, char delim) {
-    vector<int> v;
-    string temp;
-    for (char c : s) {
-        if (c != delim) {
-            temp += c;
-        } else {
-            v.push_back(stoi(temp));
-            temp = "";
-        }
+  vector<int> v;
+  string temp;
+  for (char c : s) {
+    if (c != delim) {
+      temp += c;
+    } else {
+      v.push_back(stoi(temp));
+      temp = "";
     }
-    v.push_back(stoi(temp));
-    return v;
+  }
+  v.push_back(stoi(temp));
+  return v;
 }
 
 int getSubbedMinute(string outTime, string inTime) {
-    auto out = getToken(outTime, ':');
-    auto in = getToken(inTime, ':');
-    int sub = 0;
-    if (out[1] < in[1]) {
-        --out[0];
-        sub += 60 - (in[1] - out[1]);
-    } else {
-        sub += out[1] - in[1];
-    }
-    sub += 60 * (out[0] - in[0]);
-    cout << outTime << " - " << inTime << " = " << sub << '\n';
-    return sub;
+  auto out = getToken(outTime, ':');
+  auto in = getToken(inTime, ':');
+  int sub = 0;
+  if (out[1] < in[1]) {
+    --out[0];
+    sub += 60 - (in[1] - out[1]);
+  } else {
+    sub += out[1] - in[1];
+  }
+  sub += 60 * (out[0] - in[0]);
+  return sub;
 }
 
 bool compare(const pair<int, int> &front, const pair<int, int> &back) {
-    if (front.first < back.first) {
-        return true;
-    } else {
-        return false;
-    }
+  if (front.first < back.first) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 vector<int> solution(vector<int> fees, vector<string> records) {
-    vector<int> answer;
-    unordered_map<int, int> parkingTime;
-    vector<pair<int, string>> parkingLot;
-    // 주차 시간 누적
-    for (string record : records) {
-        istringstream is(record);
-        string time, type;
-        int number;
-        is >> time >> number >> type;
-        if (type == "IN") {
-            parkingLot.push_back({number, time});
-        } else {
-            for (auto it=parkingLot.begin(); it!=parkingLot.end(); ++it) {
-                if (it->first == number) {
-                    string inTime = it->second;
-                    int minute = getSubbedMinute(time, inTime);
-                    parkingTime[number] += minute;
-                    parkingLot.erase(it);
-                    break;
-                }
-            }
+  vector<int> answer;
+  unordered_map<int, int> parkingTime;
+  vector<pair<int, string>> parkingLot;
+  // 주차 시간 누적
+  for (string record : records) {
+    istringstream is(record);
+    string time, type;
+    int number;
+    is >> time >> number >> type;
+    if (type == "IN") {
+      parkingLot.push_back({number, time});
+    } else {
+      for (auto it=parkingLot.begin(); it!=parkingLot.end(); ++it) {
+        if (it->first == number) {
+          string inTime = it->second;
+          int minute = getSubbedMinute(time, inTime);
+          parkingTime[number] += minute;
+          parkingLot.erase(it);
+          break;
         }
+      }
     }
-    // 남은 차량 처리
-    if (!parkingLot.empty()) {
-        for (auto it=parkingLot.begin(); it!=parkingLot.end(); ++it) {
-            string inTime = it->second;
-            int minute = getSubbedMinute("23:59", inTime);
-            parkingTime[it->first] += minute;
-        }
+  }
+  // 남은 차량 처리
+  if (!parkingLot.empty()) {
+    for (auto it=parkingLot.begin(); it!=parkingLot.end(); ++it) {
+      string inTime = it->second;
+      int minute = getSubbedMinute("23:59", inTime);
+      parkingTime[it->first] += minute;
     }
-    // 주차 요금 계산
-    vector<pair<int, int>> pv(parkingTime.begin(), parkingTime. end());
-    sort(pv.begin(), pv.end(), compare);
-    for (auto p : pv) {
-        int fee = fees[1];
-        if (p.second > fees[0]) {
-            fee += ceil((p.second - fees[0]) / fees[2]) * fees[3];   
-        }
-        answer.push_back(fee);
+  }
+  // 주차 요금 계산
+  vector<pair<int, int>> pv(parkingTime.begin(), parkingTime. end());
+  sort(pv.begin(), pv.end(), compare);
+  for (auto p : pv) {
+    int fee = fees[1];
+    if (p.second > fees[0]) {
+      fee += ceil((p.second - fees[0]) / (double)fees[2]) * fees[3];   
     }
-    return answer;
+    answer.push_back(fee);
+  }
+  return answer;
 }
 
 int main() {
   vector<vector<int>> fees = {
-    {180, 5000, 10, 600}
-    // {120, 0, 60, 591},
-    // {1, 461, 1, 10}
+    {180, 5000, 10, 600},
+    {120, 0, 60, 591},
+    {1, 461, 1, 10}
   };
   vector<vector<string>> records = {
     {"05:34 5961 IN", "06:00 0000 IN", "06:34 0000 OUT", "07:59 5961 OUT", "07:59 0148 IN", "18:59 0000 IN", "19:09 0148 OUT", "22:59 5961 IN", "23:00 5961 OUT"},
